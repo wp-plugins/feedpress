@@ -1,67 +1,68 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: FeedPress Plugin\n"
-"POT-Creation-Date: 2013-05-07 08:40+0100\n"
-"PO-Revision-Date: 2013-05-07 08:40+0100\n"
+"POT-Creation-Date: 2013-08-31 12:11+0100\n"
+"PO-Revision-Date: 2013-08-31 12:13+0100\n"
 "Last-Translator: Maxime VALETTE <maxime@maximevalette.com>\n"
 "Language-Team: Maxime VALETTE <maxime@maximevalette.com>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: /Users/maxime/Sites/wordpress/wp-content/plugins/"
 "feedpress\n"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:24
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:25
-msgid "URI.LV"
-msgstr "URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:24
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:25
+msgid "FeedPress"
+msgstr "FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:224
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:226
 msgid "There was something wrong with the feed creation:"
 msgstr "Une erreur s'est produite avec l'identification URI.LV :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:246
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:248
 msgid "Configuration updated."
 msgstr "Configuration mise à jour."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:258
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:260
 msgid ""
-"There was something wrong with your URI.LV authentication. Please retry."
+"There was something wrong with your FeedPress authentication. Please retry."
 msgstr ""
-"Une erreur s'est produite avec l'identification URI.LV. Veuillez réessayer."
+"Une erreur s'est produite avec l'identification FeedPress. Veuillez "
+"réessayer."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:281
-msgid "URI.LV Configuration"
-msgstr "Configuration de URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:283
+msgid "FeedPress Configuration"
+msgstr "Configuration de FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:285
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:287
 msgid "How does this work?"
 msgstr "Comment ça marche ?"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:286
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:288
 msgid ""
 "This plugin automatically redirects all or parts of your existing feeds to "
-"URI.LV."
+"FeedPress."
 msgstr ""
 "Cette extension redirige automatiquement tout ou partie de vos flux "
-"existants vers URI.LV."
+"existants vers FeedPress."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:287
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:289
 msgid ""
-"You just have to connect to URI.LV on this page. You will now be able to "
+"You just have to connect to FeedPress on this page. You will now be able to "
 "create and select the feeds you want to redirect to. You may optionally "
 "redirect your comments feed using the same procedure."
 msgstr ""
-"Connectez-vous à URI.LV sur cette page. Vous pouvez maintenant créer et "
+"Connectez-vous à FeedPress sur cette page. Vous pouvez maintenant créer et "
 "sélectionner les flux vers lesquels vous souhaitez rediriger. Vous pouvez "
 "aussi rediriger le flux des commentaires en faisant la même procédure."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:288
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:290
 msgid ""
 "Once you enter URLs your feeds will be redirected automatically and you do "
 "not need to take any further action."
@@ -69,65 +70,81 @@ msgstr ""
 "Une fois que vous avez entré les URL, vos flux seront automatiquement "
 "redirigés et vous n'avez plus rien d'autre à faire."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:289
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:291
 msgid ""
-"Additionally, when you publish a new article on your blog, URI.LV will be "
+"Additionally, when you publish a new article on your blog, FeedPress will be "
 "pinged by the plugin and your feed will be updated in realtime."
 msgstr ""
-"En plus, lorsque vous publiez un nouvel article sur votre blog, URI.LV sera "
-"notifié par l'extension et votre flux sera mis à jour en temps réel."
+"En plus, lorsque vous publiez un nouvel article sur votre blog, FeedPress "
+"sera notifié par l'extension et votre flux sera mis à jour en temps réel."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:295
-msgid "Connect to URI.LV"
-msgstr "Se connecter à URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:297
+msgid "Connect to FeedPress"
+msgstr "Se connecter à FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:299
-msgid "You are authenticated on URI.LV with the username:"
-msgstr "Vous êtes connecté à URI.LV avec ce nom d'utilisateur :"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:301
+msgid "You are authenticated on FeedPress with the username:"
+msgstr "Vous êtes connecté à FeedPress avec ce nom d'utilisateur :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:300
-msgid "Disconnect from URI.LV"
-msgstr "Se déconnecter d'URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:302
+msgid "Disconnect from FeedPress"
+msgstr "Se déconnecter de FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:304
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:304
+msgid "Main feeds"
+msgstr "Flux principaux"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:308
 msgid "Redirect my feeds here:"
 msgstr "Rediriger mes flux ici :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:309
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:332
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:313
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:336
 msgid "None"
 msgstr "Aucun"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:325
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:348
-msgid "Create a new feed on URI.LV"
-msgstr "Créer un nouveau flux sur URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:329
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:352
+msgid "Create a new feed on FeedPress"
+msgstr "Créer un nouveau flux sur FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:327
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:331
 msgid "Redirect my comments feed here:"
 msgstr "Rediriger le flux des commentaires ici :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:350
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:354
+msgid "Category feeds"
+msgstr "Flux de catégorie"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:356
+msgid "Redirect a category"
+msgstr "Rediriger une catégorie"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:358
+msgid "Tag feeds"
+msgstr "Flux de mot-clé"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:360
+msgid "Redirect a tag"
+msgstr "Rediriger un mot-clé"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:362
 msgid "Advanced Options"
 msgstr "Options avancées"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:354
-msgid "Do not redirect category or tag feeds."
-msgstr "Ne pas rediriger les flux de tags ou catégories."
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:366
+msgid "Do not redirect not configured category or tag feeds."
+msgstr "Ne pas rediriger les flux de tags ou catégories non configurés."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:358
-msgid "Append category/tag to URL for category/tag feeds."
-msgstr "Ajouter la catégorie ou le tag à l'URL des flux de catégorie/tag."
-
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:362
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:370
 msgid "Do not redirect search result feeds."
 msgstr "Ne pas rediriger les flux de résultats de recherche."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:366
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:374
 msgid "Do not redirect author feeds."
 msgstr "Ne pas rediriger les flux des auteurs."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:370
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:378
 msgid ""
 "Do not redirect ANY feeds (useful if you just want the plugin for realtime "
 "updates)."
@@ -135,45 +152,86 @@ msgstr ""
 "Ne rediriger AUCUN flux (si vous voulez l'extension uniquement pour les "
 "mises à jour en temps réel)."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:374
-msgid "Do not ping URI.LV when a new article is published."
-msgstr "Ne pas informer URI.LV lorsqu'un nouvel article est publié."
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:384
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:388
+msgid ""
+"Activate transparent mode: The feed is not redirected to FeedPress but "
+"requests are still reported."
+msgstr ""
+"Activer le mode transparent : Le flux n'est pas redirigé vers FeedPress mais "
+"les requêtes sont quand même comptabilisées."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:378
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:389
+msgid "This feature is only available to"
+msgstr "Cette fonction n'est disponible que pour les"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:389
+msgid "Premium Members"
+msgstr "Membres Premium"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:389
+msgid "starting at $2.50 per month"
+msgstr "à partir de $2,50 par mois"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:395
+msgid "Do not ping FeedPress when a new article is published."
+msgstr "Ne pas informer FeedPress lorsqu'un nouvel article est publié."
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:399
 msgid "Activate debug mode."
 msgstr "Activer le mode debug."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:382
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:403
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:394
-msgid "Create a new URI.LV feed"
-msgstr "Créer un nouveau flux sur URI.LV"
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:415
+msgid "Create a new FeedPress feed"
+msgstr "Créer un nouveau flux sur FeedPress"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:396
-msgid "Fill the form below to create your feed on URI.LV."
-msgstr "Remplissez le formulaire ci-dessous pour créer votre flux sur URI.LV."
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:417
+msgid "Fill the form below to create your feed on FeedPress."
+msgstr ""
+"Remplissez le formulaire ci-dessous pour créer votre flux sur FeedPress."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:400
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:421
 msgid "Original feed URL:"
 msgstr "URL du flux original :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:403
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:424
 msgid "Alias name for the feed:"
 msgstr "Alias pour le flux :"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:408
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:429
 msgid "Create"
 msgstr "Créer"
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:578
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:622
 msgid ""
-"Warning: The options have changed. You have to update your URI.LV settings."
+"Warning: The options have changed. You have to update your FeedPress "
+"settings."
 msgstr ""
-"Attention : Les options ont changé. Vous devez mettre à jour l'extension URI."
-"LV."
+"Attention : Les options ont changé. Vous devez mettre à jour l'extension "
+"FeedPress."
 
-#: /Users/maxime/Sites/wordpress/wp-content/plugins/urilv-feed/urilv-feed.php:578
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:622
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:626
 msgid "Update settings"
 msgstr "Mettre à jour les options"
+
+#: /Users/maxime/Sites/wordpress/wp-content/plugins/feedpress/feedpress.php:626
+msgid ""
+"Warning: You have enabled the Append category option in FeedPress. This "
+"option doesn't exist anymore, please update your FeedPress settings."
+msgstr ""
+"Attention : Vous avez activé l'option Ajouter la catégorie dans FeedPress. "
+"Cette option n'existe plus, merci de mettre à jour l'extension FeedPress."
+
+#~ msgid "Append category/tag to URL for category/tag feeds."
+#~ msgstr "Ajouter la catégorie ou le tag à l'URL des flux de catégorie/tag."
+
+#~ msgid "URI.LV"
+#~ msgstr "URI.LV"
+
+#~ msgid "Connect to URI.LV"
+#~ msgstr "Se connecter à URI.LV"

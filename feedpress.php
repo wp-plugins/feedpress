@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.3
+Version: 1.4
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -92,7 +92,7 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://api.feedpress.it/'.$url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.0 (http://feedpress.it)');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.4 (http://feedpress.it)');
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -117,7 +117,7 @@ function feedpress_conf() {
 
 	$updated = false;
 
-    if ($_GET['token']) {
+    if (isset($_GET['token'])) {
 
         $options['feedpress_token'] = ($_GET['token'] == 'reset') ? null : $_GET['token'];
 
@@ -133,6 +133,7 @@ function feedpress_conf() {
             $options['feedpress_no_search'] = 0;
             $options['feedpress_no_author'] = 0;
             $options['feedpress_no_ping'] = 0;
+            $options['feedpress_transparent'] = 0;
             $options['feedpress_debug'] = 0;
 
         }
@@ -161,12 +162,6 @@ function feedpress_conf() {
 		} else {
             $feedpress_comment_url = null;
             $feedpress_comment_id = null;
-		}
-
-		if (isset($_POST['feedpress_append_cats'])) {
-            $feedpress_append_cats = $_POST['feedpress_append_cats'];
-		} else {
-            $feedpress_append_cats = 0;
 		}
 
         if (isset($_POST['feedpress_no_redirect'])) {
@@ -199,16 +194,57 @@ function feedpress_conf() {
             $feedpress_debug = 0;
         }
 
+        if (isset($_POST['feedpress_transparent'])) {
+            $feedpress_transparent = $_POST['feedpress_transparent'];
+        } else {
+            $feedpress_transparent = 0;
+        }
+
+        if (isset($_POST['feedpress_cat_slug'])) {
+
+            $feedpress_cat = array();
+
+            foreach ($_POST['feedpress_cat_slug'] as $i => $slug) {
+
+                if (!empty($_POST['feedpress_cat_url'][$i])) {
+                    $feedpress_cat[$slug] = $_POST['feedpress_cat_url'][$i];
+                }
+
+            }
+
+        } else {
+            $feedpress_cat = array();
+        }
+
+        if (isset($_POST['feedpress_tag_slug'])) {
+
+            $feedpress_tag = array();
+
+            foreach ($_POST['feedpress_tag_slug'] as $i => $slug) {
+
+                if (!empty($_POST['feedpress_tag_url'][$i])) {
+                    $feedpress_tag[$slug] = $_POST['feedpress_tag_url'][$i];
+                }
+
+            }
+
+        } else {
+            $feedpress_tag = array();
+        }
+
 		$options['feedpress_feed_url'] = $feedpress_url;
         $options['feedpress_feed_id'] = $feedpress_id;
 		$options['feedpress_comment_url'] = $feedpress_comment_url;
         $options['feedpress_comment_id'] = $feedpress_comment_id;
-		$options['feedpress_append_cats'] = $feedpress_append_cats;
+		$options['feedpress_append_cats'] = 0;
         $options['feedpress_no_redirect'] = $feedpress_no_redirect;
 		$options['feedpress_no_cats'] = $feedpress_no_cats;
 		$options['feedpress_no_search'] = $feedpress_no_search;
 		$options['feedpress_no_author'] = $feedpress_no_author;
         $options['feedpress_debug'] = $feedpress_debug;
+        $options['feedpress_transparent'] = $feedpress_transparent;
+        $options['feedpress_cat'] = $feedpress_cat;
+        $options['feedpress_tag'] = $feedpress_tag;
 
 		update_option('feedpress', $options);
 
@@ -252,7 +288,7 @@ function feedpress_conf() {
 
         $json = feedpress_api_call('account');
 
-        if (is_array($json->errors) && count($json->errors)) {
+        if (isset($json->errors) && is_array($json->errors) && count($json->errors)) {
 
             echo '<div id="message" class="error"><p>';
             _e('There was something wrong with your FeedPress authentication. Please retry.', FEEDPRESS_TEXTDOMAIN);
@@ -298,6 +334,8 @@ function feedpress_conf() {
 
         echo '<p>'.__('You are authenticated on FeedPress with the username:', FEEDPRESS_TEXTDOMAIN).' '.$json->login.'</p>';
         echo '<p><a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'&token=reset">'.__('Disconnect from FeedPress', FEEDPRESS_TEXTDOMAIN).'</a></p>';
+
+        echo '<h2>'.__('Main feeds', FEEDPRESS_TEXTDOMAIN).'</h2>';
 
         echo '<form action="'.admin_url('options-general.php?page=feedpress/feedpress.php').'" method="post" id="feedpress-conf">';
 
@@ -347,15 +385,115 @@ function feedpress_conf() {
 
         echo '<p><a href="javascript:;" onclick="document.getElementById(\'form-create\').style.display=\'block\';document.getElementById(\'form-conf\').style.display=\'none\';">'.__('Create a new feed on FeedPress', FEEDPRESS_TEXTDOMAIN).' &raquo;</a></p>';
 
-        echo '<h3>'.__('Advanced Options', FEEDPRESS_TEXTDOMAIN).'</h3>';
+        echo '<h2>'.__('Category feeds', FEEDPRESS_TEXTDOMAIN).'</h2>';
+
+        foreach ($options['feedpress_cat'] as $slug => $url) {
+
+            echo '<h3>'.__('Category:', FEEDPRESS_TEXTDOMAIN).' '.$slug.'</h3>';
+            echo '<p>&rarr; '.$url.' — <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'&delete=cat&slug='.$slug.'">'.__('Delete', FEEDPRESS_TEXTDOMAIN).'</a></p>';
+
+            echo '<input type="hidden" name="feedpress_cat_slug[]" value="'.$slug.'">';
+            echo '<input type="hidden" name="feedpress_cat_url[]" value="'.$url.'">';
+
+        }
+
+        echo '<div id="feedpress_cat_form" style="display: none;"><h3>'.__('Redirect a category', FEEDPRESS_TEXTDOMAIN).'</h3>';
+
+        $categories = get_categories();
+
+        echo '<p>'.__('Category:', FEEDPRESS_TEXTDOMAIN).' <select name="feedpress_cat_slug[]">';
+
+        foreach ($categories as $category) {
+
+            if (!isset($options['feedpress_cat'][$category->slug])) {
+
+                echo '<option value="'.$category->slug.'">'.$category->name.' ('.$category->slug.')</option>';
+
+            }
+
+        }
+
+        echo '</select></p>';
+
+        echo '<p><select name="feedpress_cat_url[]" style="width: 400px;" />';
+
+        echo '<option value="">'.__('None', FEEDPRESS_TEXTDOMAIN).'</option>';
+
+        if (is_array($json->feeds)) {
+
+            foreach ($json->feeds as $feed) {
+
+                echo '<option value="'.$feed->url.'">'.$feed->url.'</option>';
+
+            }
+
+        }
+
+        echo '</select></p></div>';
+
+        if (count($categories) > count($options['feedpress_cat'])) {
+
+            echo '<p><input type="button" name="add" onclick="this.parentNode.parentNode.removeChild(this.parentNode);document.getElementById(\'feedpress_cat_form\').style.display=\'block\';" value="'.__('Redirect a category', FEEDPRESS_TEXTDOMAIN).' &raquo;" /></p>';
+
+        }
+
+        echo '<h2>'.__('Tag feeds', FEEDPRESS_TEXTDOMAIN).'</h2>';
+
+        foreach ($options['feedpress_tag'] as $slug => $url) {
+
+            echo '<h3>'.__('Tag:', FEEDPRESS_TEXTDOMAIN).' '.$slug.'</h3>';
+            echo '<p>&rarr; '.$url.' — <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'&delete=tag&slug='.$slug.'">'.__('Delete', FEEDPRESS_TEXTDOMAIN).'</a></p>';
+
+            echo '<input type="hidden" name="feedpress_tag_slug[]" value="'.$slug.'">';
+            echo '<input type="hidden" name="feedpress_tag_url[]" value="'.$url.'">';
+
+        }
+
+        echo '<div id="feedpress_tag_form" style="display: none;"><h3>'.__('Redirect a tag', FEEDPRESS_TEXTDOMAIN).'</h3>';
+
+        $tags = get_tags();
+
+        echo '<p>'.__('Tag:', FEEDPRESS_TEXTDOMAIN).' <select name="feedpress_tag_slug[]">';
+
+        foreach ($tags as $tag) {
+
+            if (!isset($options['feedpress_tag'][$tag->slug])) {
+
+                echo '<option value="'.$tag->slug.'">'.$tag->name.' ('.$tag->slug.')</option>';
+
+            }
+
+        }
+
+        echo '</select></p>';
+
+        echo '<p><select name="feedpress_tag_url[]" style="width: 400px;" />';
+
+        echo '<option value="">'.__('None', FEEDPRESS_TEXTDOMAIN).'</option>';
+
+        if (is_array($json->feeds)) {
+
+            foreach ($json->feeds as $feed) {
+
+                echo '<option value="'.$feed->url.'">'.$feed->url.'</option>';
+
+            }
+
+        }
+
+        echo '</select></p></div>';
+
+        if (count($tags) > count($options['feedpress_tag'])) {
+
+            echo '<p><input type="button" name="add" onclick="this.parentNode.parentNode.removeChild(this.parentNode);document.getElementById(\'feedpress_tag_form\').style.display=\'block\';" value="'.__('Redirect a tag', FEEDPRESS_TEXTDOMAIN).' &raquo;" /></p>';
+
+        }
+
+        echo '<h2>'.__('Advanced Options', FEEDPRESS_TEXTDOMAIN).'</h2>';
 
         echo '<p><input id="feedpress_no_cats" name="feedpress_no_cats" type="checkbox" value="1"';
         if ($options['feedpress_no_cats'] == 1) echo ' checked';
-        echo '/> <label for="feedpress_no_cats">'.__('Do not redirect category or tag feeds.', FEEDPRESS_TEXTDOMAIN).'</label></p>';
-
-        echo '<p><input id="feedpress_append_cats" name="feedpress_append_cats" type="checkbox" value="1"';
-        if ($options['feedpress_append_cats'] == 1) echo ' checked';
-        echo '/> <label for="feedpress_append_cats">'.__('Append category/tag to URL for category/tag feeds.', FEEDPRESS_TEXTDOMAIN).' (<i>http://feedpress.me/MyFeed<b>/category</b></i>)</label></p>';
+        echo '/> <label for="feedpress_no_cats">'.__('Do not redirect not configured category or tag feeds.', FEEDPRESS_TEXTDOMAIN).'</label></p>';
 
         echo '<p><input id="feedpress_no_search" name="feedpress_no_search" type="checkbox" value="1"';
         if ($options['feedpress_no_search'] == 1) echo ' checked';
@@ -368,6 +506,19 @@ function feedpress_conf() {
         echo '<p><input id="feedpress_no_redirect" name="feedpress_no_redirect" type="checkbox" value="1"';
         if ($options['feedpress_no_redirect'] == 1) echo ' checked';
         echo '/> <label for="feedpress_no_redirect">'.__('Do not redirect ANY feeds (useful if you just want the plugin for realtime updates).', FEEDPRESS_TEXTDOMAIN).'</label></p>';
+
+        if ($json->premium) {
+
+            echo '<p><input id="feedpress_transparent" name="feedpress_transparent" type="checkbox" value="1"';
+            if ($options['feedpress_transparent'] == 1) echo ' checked';
+            echo '/> <label for="feedpress_transparent">'.__('Activate transparent mode: The feed is not redirected to FeedPress but requests are still reported.', FEEDPRESS_TEXTDOMAIN).'</label></p>';
+
+        } else {
+
+            echo '<p><input id="feedpress_transparent" name="feedpress_transparent" type="checkbox" value="1" disabled/> <label for="feedpress_transparent" style="opacity: 0.5;">'.__('Activate transparent mode: The feed is not redirected to FeedPress but requests are still reported.', FEEDPRESS_TEXTDOMAIN).'</label>';
+            echo '<br><em style="margin-left: 14px;">'.__('This feature is only available to', FEEDPRESS_TEXTDOMAIN) . ' <a href="http://feedpress.it/features" target="_blank">'.__('Premium Members', FEEDPRESS_TEXTDOMAIN).'</a> — '.__('starting at $2.50 per month', FEEDPRESS_TEXTDOMAIN).'.</em></p>';
+
+        }
 
         echo '<p><input id="feedpress_no_ping" name="feedpress_no_ping" type="checkbox" value="1"';
         if ($options['feedpress_no_ping'] == 1) echo ' checked';
@@ -446,15 +597,17 @@ function feedpress_redirect() {
 
     // Do nothing if feedvalidator is the user-agent
     if (preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT'])) return;
-	
+
 	// Avoid redirecting Googlebot to avoid sitemap feeds issues
 	if (preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) return;
 
     $feed_url = null;
     $comment_url = null;
+    $feed_id = null;
 
 	if (!empty($options['feedpress_feed_url'])) {
         $feed_url = $options['feedpress_feed_url'];
+        $feed_id = $options['feedpress_feed_id'];
     }
 
     if (!empty($options['feedpress_comment_url'])) {
@@ -479,18 +632,11 @@ function feedpress_redirect() {
 			$cat = $wpdb->get_var("SELECT category_nicename FROM $wpdb->categories WHERE cat_ID = '".$wp->query_vars['cat']."' LIMIT 1");
 		}
 	}
-
-	if ($options['feedpress_append_cats'] == 1 && $cat) {
-		$feed_url .= '/'.$cat;
-	}
 	
 	// Get tag
 	$tag = null;
 	if ($wp->query_vars['tag'] != null) {
 		$tag = $wp->query_vars['tag'];
-	}
-	if ($options['feedpress_append_cats'] == 1 && $tag) {
-		$feed_url .= '/'.$tag;
 	}
 
 	// Get search terms
@@ -508,10 +654,19 @@ function feedpress_redirect() {
 	// Redirect comment feed
 	if ($feed == 'comments-rss2' || is_single() || $withcomments) {
 		if ($comment_url != null) {
-            header('Cache-Control: no-cache, must-revalidate');
-            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-            wp_redirect($comment_url, 307);
-			exit;
+            if ($options['feedpress_transparent'] == 1) {
+                feedpress_api_call('feeds/hit', array(
+                        'feed' => $options['feedpress_comment_id'],
+                        'ua' => $_SERVER['HTTP_USER_AGENT'],
+                        'ip' => $_SERVER['REMOTE_ADDR']
+                    )
+                );
+            } else {
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                wp_redirect($comment_url, 307);
+                exit;
+            }
 		}
 	} else {
 		// Other feeds
@@ -521,19 +676,38 @@ function feedpress_redirect() {
 			case 'rss':
 			case 'rss2':
 			case 'atom':
-				if (($cat || $tag) && $options['feedpress_no_cats'] == 1) {
-					// If this is a category/tag feed and redirect is disabled, do nothing
+				if ($cat && isset($options['feedpress_cat'][$cat])) {
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    wp_redirect($options['feedpress_cat'][$cat], 307);
+                    exit;
+                } else if ($tag && isset($options['feedpress_tag'][$tag])) {
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                    wp_redirect($options['feedpress_tag'][$tag], 307);
+                    exit;
+                } else if ($options['feedpress_no_cats'] == 1) {
+                    // If this is a category/tag feed and redirect is disabled, do nothing
 				} else if ($search && $options['feedpress_no_search'] == 1) {
 					// If this is a search result feed and redirect is disabled, do nothing
 				} else if ($author_name && $options['feedpress_no_author'] == 1) {
 					// If this is an author feed and redirect is disabled, do nothing
 				} else {
 					if ($feed_url != null) {
-						// Redirect the feed
-                        header('Cache-Control: no-cache, must-revalidate');
-                        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-                        wp_redirect($feed_url, 307);
-                        exit;
+                        if ($options['feedpress_transparent'] == 1) {
+                            feedpress_api_call('feeds/hit', array(
+                                    'feed' => $feed_id,
+                                    'ua' => $_SERVER['HTTP_USER_AGENT'],
+                                    'ip' => $_SERVER['REMOTE_ADDR']
+                                )
+                            );
+                        } else {
+                            // Redirect the feed
+                            header('Cache-Control: no-cache, must-revalidate');
+                            header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                            wp_redirect($feed_url, 307);
+                            exit;
+                        }
 					}
 				}
 		}
@@ -543,7 +717,8 @@ function feedpress_redirect() {
 
 // Handle feed redirections
 
-if (!preg_match('/uri\.lv/i', $_SERVER['HTTP_USER_AGENT']) &&
+if (!preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
+    !preg_match('/uri\.lv/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) {
 
@@ -579,11 +754,18 @@ function feedpress_admin_notice() {
 
     $options = get_option('feedpress');
 
-    if (current_user_can('manage_options') &&
-        ((!empty($options['feedpress_feed_url']) && !preg_match('/^http/', $options['feedpress_feed_url'])) ||
-        (!empty($options['feedpress_comment_url']) && !preg_match('/^http/', $options['feedpress_comment_url'])))) {
+    if (current_user_can('manage_options')) {
 
-        echo '<div class="error"><p>'.__('Warning: The options have changed. You have to update your FeedPress settings.', FEEDPRESS_TEXTDOMAIN).' <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'">'.__('Update settings', FEEDPRESS_TEXTDOMAIN).' &rarr;</a></p></div>';
+        if ((!empty($options['feedpress_feed_url']) && !preg_match('/^http/', $options['feedpress_feed_url'])) ||
+            (!empty($options['feedpress_comment_url']) && !preg_match('/^http/', $options['feedpress_comment_url']))) {
+
+            echo '<div class="error"><p>'.__('Warning: The options have changed. You have to update your FeedPress settings.', FEEDPRESS_TEXTDOMAIN).' <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'">'.__('Update settings', FEEDPRESS_TEXTDOMAIN).' &rarr;</a></p></div>';
+
+        } elseif ($options['feedpress_append_cats'] == '1') {
+
+            echo '<div class="error"><p>'.__('Warning: You have enabled the Append category option in FeedPress. This option doesn\'t exist anymore, please update your FeedPress settings.', FEEDPRESS_TEXTDOMAIN).' <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'">'.__('Update settings', FEEDPRESS_TEXTDOMAIN).' &rarr;</a></p></div>';
+
+        }
 
     }
 
@@ -605,8 +787,45 @@ function feedpress_get_options() {
     if (!isset($options['feedpress_no_search'])) $options['feedpress_no_search'] = 0;
     if (!isset($options['feedpress_no_author'])) $options['feedpress_no_author'] = 0;
     if (!isset($options['feedpress_no_ping'])) $options['feedpress_no_ping'] = 0;
+    if (!isset($options['feedpress_transparent'])) $options['feedpress_transparent'] = 0;
     if (!isset($options['feedpress_debug'])) $options['feedpress_debug'] = 0;
+    if (!isset($options['feedpress_cat'])) $options['feedpress_cat'] = array();
+    if (!isset($options['feedpress_tag'])) $options['feedpress_tag'] = array();
 
     return $options;
 
 }
+
+function custom_taxonomy()  {
+
+    $labels = array(
+        'name'                       => 'Genres',
+        'singular_name'              => 'Genre',
+        'menu_name'                  => 'Genre',
+        'all_items'                  => 'All Genres',
+        'parent_item'                => 'Parent Genre',
+        'parent_item_colon'          => 'Parent Genre:',
+        'new_item_name'              => 'New Genre Name',
+        'add_new_item'               => 'Add New Genre',
+        'edit_item'                  => 'Edit Genre',
+        'update_item'                => 'Update Genre',
+        'separate_items_with_commas' => 'Separate genres with commas',
+        'search_items'               => 'Search genres',
+        'add_or_remove_items'        => 'Add or remove genres',
+        'choose_from_most_used'      => 'Choose from the most used genres',
+    );
+    $args = array(
+        'labels'                     => $labels,
+        'hierarchical'               => true,
+        'public'                     => true,
+        'show_ui'                    => true,
+        'show_admin_column'          => true,
+        'show_in_nav_menus'          => true,
+        'show_tagcloud'              => true,
+    );
+    register_taxonomy( 'genre', 'post', $args );
+
+}
+
+// Hook into the 'init' action
+add_action( 'init', 'custom_taxonomy', 0 );
