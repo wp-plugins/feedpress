@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.4
+Version: 1.4.1
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -92,7 +92,7 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://api.feedpress.it/'.$url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.4 (http://feedpress.it)');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.4.1 (http://feedpress.it)');
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -135,6 +135,24 @@ function feedpress_conf() {
             $options['feedpress_no_ping'] = 0;
             $options['feedpress_transparent'] = 0;
             $options['feedpress_debug'] = 0;
+
+        }
+
+        update_option('feedpress', $options);
+
+        $updated = true;
+
+    }
+
+    if (isset($_GET['delete']) && isset($_GET['slug'])) {
+
+        if ($_GET['delete'] == 'cat') {
+
+            unset($options['feedpress_cat'][$_GET['slug']]);
+
+        } elseif ($_GET['delete'] == 'tag') {
+
+            unset($options['feedpress_tag'][$_GET['slug']]);
 
         }
 
