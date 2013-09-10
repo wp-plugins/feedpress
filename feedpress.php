@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.4.1
+Version: 1.5
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -92,7 +92,7 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://api.feedpress.it/'.$url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.4.1 (http://feedpress.it)');
+        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.5 (http://feedpress.it)');
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -144,7 +144,7 @@ function feedpress_conf() {
 
     }
 
-    if (isset($_GET['delete']) && isset($_GET['slug'])) {
+    if (isset($_GET['delete']) && (isset($_GET['slug']) || isset($_GET['path']))) {
 
         if ($_GET['delete'] == 'cat') {
 
@@ -153,6 +153,10 @@ function feedpress_conf() {
         } elseif ($_GET['delete'] == 'tag') {
 
             unset($options['feedpress_tag'][$_GET['slug']]);
+
+        } elseif ($_GET['delete'] == 'url') {
+
+            unset($options['feedpress_url'][$_GET['path']]);
 
         }
 
@@ -167,10 +171,10 @@ function feedpress_conf() {
 		check_admin_referer('feedpress', 'feedpress-admin');
 
 		if (isset($_POST['feedpress_feed_url'])) {
-			$feedpress_url = $_POST['feedpress_feed_url'];
-			$feedpress_id = feedpress_get_feed_name($feedpress_url);
+			$feedpress_feed_url = $_POST['feedpress_feed_url'];
+			$feedpress_id = feedpress_get_feed_name($feedpress_feed_url);
 		} else {
-            $feedpress_url = null;
+            $feedpress_feed_url = null;
             $feedpress_id = null;
 		}
 
@@ -250,7 +254,23 @@ function feedpress_conf() {
             $feedpress_tag = array();
         }
 
-		$options['feedpress_feed_url'] = $feedpress_url;
+        if (isset($_POST['feedpress_url_path'])) {
+
+            $feedpress_url = array();
+
+            foreach ($_POST['feedpress_url_path'] as $i => $path) {
+
+                if (!empty($_POST['feedpress_url_url'][$i])) {
+                    $feedpress_url[strtolower($path)] = $_POST['feedpress_url_url'][$i];
+                }
+
+            }
+
+        } else {
+            $feedpress_url = array();
+        }
+
+		$options['feedpress_feed_url'] = $feedpress_feed_url;
         $options['feedpress_feed_id'] = $feedpress_id;
 		$options['feedpress_comment_url'] = $feedpress_comment_url;
         $options['feedpress_comment_id'] = $feedpress_comment_id;
@@ -263,6 +283,7 @@ function feedpress_conf() {
         $options['feedpress_transparent'] = $feedpress_transparent;
         $options['feedpress_cat'] = $feedpress_cat;
         $options['feedpress_tag'] = $feedpress_tag;
+        $options['feedpress_url'] = $feedpress_url;
 
 		update_option('feedpress', $options);
 
@@ -507,6 +528,42 @@ function feedpress_conf() {
 
         }
 
+        echo '<h2>'.__('Custom URL redirection', FEEDPRESS_TEXTDOMAIN).'</h2>';
+
+        foreach ($options['feedpress_url'] as $path => $url) {
+
+            echo '<h3>'.__('Path:', FEEDPRESS_TEXTDOMAIN).' '.$path.'</h3>';
+            echo '<p>&rarr; '.$url.' — <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'&delete=url&path='.$path.'">'.__('Delete', FEEDPRESS_TEXTDOMAIN).'</a></p>';
+
+            echo '<input type="hidden" name="feedpress_url_path[]" value="'.$path.'">';
+            echo '<input type="hidden" name="feedpress_url_url[]" value="'.$url.'">';
+
+        }
+
+        echo '<div id="feedpress_url_form" style="display: none;"><h3>'.__('Redirect a URL', FEEDPRESS_TEXTDOMAIN).'</h3>';
+
+        echo '<p>'.__('If you want to redirect a specific path, fill this simple form.', FEEDPRESS_TEXTDOMAIN).'</p>';
+
+        echo '<p>'.__('Path:', FEEDPRESS_TEXTDOMAIN).' <input type="text" placeholder="'.__('Example: /feed/podcast', FEEDPRESS_TEXTDOMAIN).'" name="feedpress_url_path[]"></p>';
+
+        echo '<p><select name="feedpress_url_url[]" style="width: 400px;" />';
+
+        echo '<option value="">'.__('None', FEEDPRESS_TEXTDOMAIN).'</option>';
+
+        if (is_array($json->feeds)) {
+
+            foreach ($json->feeds as $feed) {
+
+                echo '<option value="'.$feed->url.'">'.$feed->url.'</option>';
+
+            }
+
+        }
+
+        echo '</select></p></div>';
+
+        echo '<p><input type="button" name="add" onclick="this.parentNode.parentNode.removeChild(this.parentNode);document.getElementById(\'feedpress_url_form\').style.display=\'block\';" value="'.__('Redirect a URL', FEEDPRESS_TEXTDOMAIN).' &raquo;" /></p>';
+
         echo '<h2>'.__('Advanced Options', FEEDPRESS_TEXTDOMAIN).'</h2>';
 
         echo '<p><input id="feedpress_no_cats" name="feedpress_no_cats" type="checkbox" value="1"';
@@ -589,11 +646,20 @@ function feedpress_redirect() {
 
 	global $feed, $withcomments, $wp, $wpdb, $wp_version, $wp_db_version;
 
-	// Do nothing if not a feed
-	if (!is_feed()) return;
-
     // Do nothing if not configured
     $options = feedpress_get_options();
+
+    // Custom URL redirects
+    if (isset($options['feedpress_url'][strtolower($_SERVER['REQUEST_URI'])])) {
+
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        wp_redirect($options['feedpress_url'][strtolower($_SERVER['REQUEST_URI'])], 307);
+
+    }
+
+    // Do nothing if not a feed
+    if (!is_feed()) return;
 
     if ($options['feedpress_debug'] == '1' && isset($_GET['debug'])) {
 
@@ -777,6 +843,8 @@ function feedpress_admin_notice() {
         if ((!empty($options['feedpress_feed_url']) && !preg_match('/^http/', $options['feedpress_feed_url'])) ||
             (!empty($options['feedpress_comment_url']) && !preg_match('/^http/', $options['feedpress_comment_url']))) {
 
+            var_dump($options);
+
             echo '<div class="error"><p>'.__('Warning: The options have changed. You have to update your FeedPress settings.', FEEDPRESS_TEXTDOMAIN).' <a href="'.admin_url('options-general.php?page=feedpress/feedpress.php').'">'.__('Update settings', FEEDPRESS_TEXTDOMAIN).' &rarr;</a></p></div>';
 
         } elseif ($options['feedpress_append_cats'] == '1') {
@@ -809,6 +877,7 @@ function feedpress_get_options() {
     if (!isset($options['feedpress_debug'])) $options['feedpress_debug'] = 0;
     if (!isset($options['feedpress_cat'])) $options['feedpress_cat'] = array();
     if (!isset($options['feedpress_tag'])) $options['feedpress_tag'] = array();
+    if (!isset($options['feedpress_url'])) $options['feedpress_url'] = array();
 
     return $options;
 
