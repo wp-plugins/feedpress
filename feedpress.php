@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5
+Version: 1.5.1
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -76,34 +76,25 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
     $params['key'] = '50d45a6bef51d';
     $params['token'] = $options['feedpress_token'];
 
-    $qs = http_build_query($params, '', '&');
+    $request = new WP_Http;
 
     if ($type == 'GET') {
 
-        $ch = curl_init();
-        curl_setopt ($ch, CURLOPT_URL, 'http://api.feedpress.it/'.$url.'?'.$qs);
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-        $data = curl_exec($ch);
-        curl_close($ch);
+        $qs = http_build_query($params, '', '&');
 
-        $json = json_decode($data);
+        $result = $request->request('http://api.feedpress.it/'.$url.'?'.$qs);
+
+        $json = json_decode($result['body']);
 
     } elseif ($type == 'POST') {
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'http://api.feedpress.it/'.$url);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'FeedPress/1.5 (http://feedpress.it)');
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $qs);
+        $result = $request->request('http://api.feedpress.it/'.$url, array(
+                'method' => 'POST',
+                'body' => $params
+            )
+        );
 
-        $data = curl_exec($ch);
-        $json = json_decode($data);
-
-        curl_close($ch);
+        $json = json_decode($result['body']);
 
     }
 
