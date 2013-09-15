@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.1
+Version: 1.5.2
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -84,7 +84,11 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
 
         $result = $request->request('http://api.feedpress.it/'.$url.'?'.$qs);
 
-        $json = json_decode($result['body']);
+        if ($result['response']['code'] == 200) {
+
+            $json = json_decode($result['body']);
+
+        }
 
     } elseif ($type == 'POST') {
 
@@ -94,7 +98,11 @@ function feedpress_api_call($url, $params = array(), $type='GET') {
             )
         );
 
-        $json = json_decode($result['body']);
+        if ($result['response']['code'] == 200) {
+
+            $json = json_decode($result['body']);
+
+        }
 
     }
 
