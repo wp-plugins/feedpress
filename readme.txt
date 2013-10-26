@@ -3,8 +3,8 @@ Contributors: maximevalette
 Donate link: http://maxime.sh/paypal
 Tags: feedpress, uri.lv, redirect, rss, feed, feedburner
 Requires at least: 3.0
-Tested up to: 3.6.1
-Stable tag: 1.5.3
+Tested up to: 3.7
+Stable tag: 1.5.4
 
 Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 
@@ -23,6 +23,10 @@ Additionally, every time you publish a new article, a ping is sent to FeedPress 
 3. Configure your feed from the new FeedPress Settings submenu
 
 == Changelog ==
+
+= 1.5.4 =
+* WordPress 3.7 compatibiliy.
+* Removed extra taxonomy.
 
 = 1.5.3 =
 * Another side effect fix of the WP Http class. Sorry about that.

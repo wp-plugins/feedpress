@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.3
+Version: 1.5.4
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -881,37 +881,3 @@ function feedpress_get_options() {
     return $options;
 
 }
-
-function custom_taxonomy()  {
-
-    $labels = array(
-        'name'                       => 'Genres',
-        'singular_name'              => 'Genre',
-        'menu_name'                  => 'Genre',
-        'all_items'                  => 'All Genres',
-        'parent_item'                => 'Parent Genre',
-        'parent_item_colon'          => 'Parent Genre:',
-        'new_item_name'              => 'New Genre Name',
-        'add_new_item'               => 'Add New Genre',
-        'edit_item'                  => 'Edit Genre',
-        'update_item'                => 'Update Genre',
-        'separate_items_with_commas' => 'Separate genres with commas',
-        'search_items'               => 'Search genres',
-        'add_or_remove_items'        => 'Add or remove genres',
-        'choose_from_most_used'      => 'Choose from the most used genres',
-    );
-    $args = array(
-        'labels'                     => $labels,
-        'hierarchical'               => true,
-        'public'                     => true,
-        'show_ui'                    => true,
-        'show_admin_column'          => true,
-        'show_in_nav_menus'          => true,
-        'show_tagcloud'              => true,
-    );
-    register_taxonomy( 'genre', 'post', $args );
-
-}
-
-// Hook into the 'init' action
-add_action( 'init', 'custom_taxonomy', 0 );
