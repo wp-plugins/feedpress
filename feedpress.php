@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.4
+Version: 1.5.5
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -579,7 +579,7 @@ function feedpress_conf() {
 
         echo '<p><input id="feedpress_no_redirect" name="feedpress_no_redirect" type="checkbox" value="1"';
         if ($options['feedpress_no_redirect'] == 1) echo ' checked';
-        echo '/> <label for="feedpress_no_redirect">'.__('Do not redirect ANY feeds (useful if you just want the plugin for realtime updates).', FEEDPRESS_TEXTDOMAIN).'</label></p>';
+        echo '/> <label for="feedpress_no_redirect">'.__('Do not redirect any feeds (useful if you just want FeedPress to refresh your feed when you publish something).', FEEDPRESS_TEXTDOMAIN).'</label></p>';
 
         if ($json->premium) {
 
@@ -675,15 +675,6 @@ function feedpress_redirect() {
 
     }
 
-	// Do nothing if FeedPress is the user-agent
-	if (preg_match('/FeedPress/i', $_SERVER['HTTP_USER_AGENT'])) return;
-
-    // Do nothing if feedvalidator is the user-agent
-    if (preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT'])) return;
-
-	// Avoid redirecting Googlebot to avoid sitemap feeds issues
-	if (preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) return;
-
     $feed_url = null;
     $comment_url = null;
     $feed_id = null;
@@ -697,7 +688,7 @@ function feedpress_redirect() {
         $comment_url = $options['feedpress_comment_url'];
     }
 
-    if ($options['feedpress_no_redirect'] == 1 || ($feed_url == null && $comment_url == null)) return;
+    if (($options['feedpress_no_redirect'] == 1 && $options['feedpress_transparent'] == 0) || ($feed_url == null && $comment_url == null)) return;
 
 	// Get category
 
