@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.5
+Version: 1.5.6
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -694,11 +694,11 @@ function feedpress_redirect() {
 
     $cat = null;
 
-	if ($wp->query_vars['category_name'] != null) {
+	if (isset($wp->query_vars['category_name']) && $wp->query_vars['category_name'] != null) {
 		$cat = $wp->query_vars['category_name'];
 	}
 
-	if ($wp->query_vars['cat'] != null) {
+	if (isset($wp->query_vars['cat']) && $wp->query_vars['cat'] != null) {
 		if ($wp_db_version >= 6124) {
 			// 6124 = WP 2.3
 			$cat = $wpdb->get_var("SELECT slug FROM $wpdb->terms WHERE term_id = '".$wp->query_vars['cat']."' LIMIT 1");
@@ -709,19 +709,19 @@ function feedpress_redirect() {
 	
 	// Get tag
 	$tag = null;
-	if ($wp->query_vars['tag'] != null) {
+	if (isset($wp->query_vars['tag']) && $wp->query_vars['tag'] != null) {
 		$tag = $wp->query_vars['tag'];
 	}
 
 	// Get search terms
 	$search = null;
-	if ($wp->query_vars['s'] != null) {
+	if (isset($wp->query_vars['s']) && $wp->query_vars['s'] != null) {
 		$search = $wp->query_vars['s'];
 	}
 
 	// Get author name
 	$author_name = null;
-	if ($wp->query_vars['author_name'] != null) {
+	if (isset($wp->query_vars['author_name']) && $wp->query_vars['author_name'] != null) {
 		$author_name = $wp->query_vars['author_name'];
 	}
 
