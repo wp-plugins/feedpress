@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.5
+Version: 1.5.7
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -626,7 +626,7 @@ function feedpress_conf() {
         echo '<p><input type="text" id="feedpress_url" name="feedpress_url" value="'.get_bloginfo('rss2_url').'" style="width: 400px;" /></p>';
 
         echo '<h3><label for="feedpress_alias">'.__('Alias name for the feed:', FEEDPRESS_TEXTDOMAIN).'</label></h3>';
-        echo '<p>http://feedpress.me/ <input type="text" id="feedpress_alias" name="feedpress_alias" value="'.feedpress_urlcompliant(get_bloginfo('name')).'" style="width: 150px;" /></p>';
+        echo '<p>http://feedpress.me/ <input type="text" id="feedpress_alias" name="feedpress_alias" value="'.AMQPChannelcompliant(get_bloginfo('name')).'" style="width: 150px;" /></p>';
 
         echo '<p class="submit" style="text-align: left">';
         wp_nonce_field('feedpress', 'feedpress-admin');
@@ -654,6 +654,8 @@ function feedpress_redirect() {
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         wp_redirect($options['feedpress_url'][strtolower($_SERVER['REQUEST_URI'])], 307);
+		
+		exit;
 
     }
 
@@ -694,11 +696,11 @@ function feedpress_redirect() {
 
     $cat = null;
 
-	if ($wp->query_vars['category_name'] != null) {
+	if (isset($wp->query_vars['category_name']) && $wp->query_vars['category_name'] != null) {
 		$cat = $wp->query_vars['category_name'];
 	}
 
-	if ($wp->query_vars['cat'] != null) {
+	if (isset($wp->query_vars['cat']) && $wp->query_vars['cat'] != null) {
 		if ($wp_db_version >= 6124) {
 			// 6124 = WP 2.3
 			$cat = $wpdb->get_var("SELECT slug FROM $wpdb->terms WHERE term_id = '".$wp->query_vars['cat']."' LIMIT 1");
@@ -709,19 +711,19 @@ function feedpress_redirect() {
 	
 	// Get tag
 	$tag = null;
-	if ($wp->query_vars['tag'] != null) {
+	if (isset($wp->query_vars['tag']) && $wp->query_vars['tag'] != null) {
 		$tag = $wp->query_vars['tag'];
 	}
 
 	// Get search terms
 	$search = null;
-	if ($wp->query_vars['s'] != null) {
+	if (isset($wp->query_vars['s']) && $wp->query_vars['s'] != null) {
 		$search = $wp->query_vars['s'];
 	}
 
 	// Get author name
 	$author_name = null;
-	if ($wp->query_vars['author_name'] != null) {
+	if (isset($wp->query_vars['author_name']) && $wp->query_vars['author_name'] != null) {
 		$author_name = $wp->query_vars['author_name'];
 	}
 
