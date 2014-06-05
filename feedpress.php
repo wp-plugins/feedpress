@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: Maxime VALETTE
 Author URI: http://maximevalette.com
-Version: 1.5.7
+Version: 1.5.8
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -626,7 +626,7 @@ function feedpress_conf() {
         echo '<p><input type="text" id="feedpress_url" name="feedpress_url" value="'.get_bloginfo('rss2_url').'" style="width: 400px;" /></p>';
 
         echo '<h3><label for="feedpress_alias">'.__('Alias name for the feed:', FEEDPRESS_TEXTDOMAIN).'</label></h3>';
-        echo '<p>http://feedpress.me/ <input type="text" id="feedpress_alias" name="feedpress_alias" value="'.AMQPChannelcompliant(get_bloginfo('name')).'" style="width: 150px;" /></p>';
+        echo '<p>http://feedpress.me/ <input type="text" id="feedpress_alias" name="feedpress_alias" value="'.feedpress_urlcompliant(get_bloginfo('name')).'" style="width: 150px;" /></p>';
 
         echo '<p class="submit" style="text-align: left">';
         wp_nonce_field('feedpress', 'feedpress-admin');
