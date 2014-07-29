@@ -3,9 +3,9 @@
 Plugin Name: FeedPress
 Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
-Author: Maxime VALETTE
-Author URI: http://maximevalette.com
-Version: 1.5.8
+Author: FeedPress
+Author URI: https://feedpress.it
+Version: 1.5.9
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -171,7 +171,7 @@ function feedpress_conf() {
 
 		if (isset($_POST['feedpress_feed_url'])) {
 			$feedpress_feed_url = $_POST['feedpress_feed_url'];
-			$feedpress_id = feedpress_get_feed_name($feedpress_feed_url);
+			$feedpress_id = $options['feedpress_feeds'][$_POST['feedpress_feed_url']];
 		} else {
             $feedpress_feed_url = null;
             $feedpress_id = null;
@@ -179,7 +179,7 @@ function feedpress_conf() {
 
 		if (isset($_POST['feedpress_comment_url'])) {
 			$feedpress_comment_url = $_POST['feedpress_comment_url'];
-            $feedpress_comment_id = feedpress_get_feed_name($feedpress_comment_url);
+            $feedpress_comment_id = $options['feedpress_feeds'][$_POST['feedpress_comment_url']];
 		} else {
             $feedpress_comment_url = null;
             $feedpress_comment_id = null;
@@ -384,6 +384,8 @@ function feedpress_conf() {
         if (empty($options['feedpress_token'])) echo ' SELECTED';
         echo '>'.__('None', FEEDPRESS_TEXTDOMAIN).'</option>';
 
+	    $feedsData = array();
+
         if (is_array($json->feeds)) {
 
             foreach ($json->feeds as $feed) {
@@ -391,6 +393,8 @@ function feedpress_conf() {
                 echo '<option value="'.$feed->url.'"';
                 if ($options['feedpress_feed_id'] == $feed->name) echo ' SELECTED';
                 echo '>'.$feed->url.'</option>';
+
+	            $feedsData[$feed->url] = $feed->name;
 
             }
 
@@ -636,6 +640,9 @@ function feedpress_conf() {
 
         echo '</div>';
 
+	    $options['feedpress_feeds'] = $feedsData;
+	    update_option('feedpress', $options);
+
     }
 
 }
@@ -817,14 +824,6 @@ function feedpress_publish_post() {
 
 // Action when a post is published
 add_action('publish_post', 'feedpress_publish_post');
-
-function feedpress_get_feed_name($url) {
-
-    $infos = parse_url($url);
-
-    return substr($infos['path'], 1);
-
-}
 
 function feedpress_admin_notice() {
 
