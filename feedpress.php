@@ -800,7 +800,8 @@ function feedpress_redirect() {
 
 // Handle feed redirections
 
-if (!preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
+if (isset($_SERVER['HTTP_USER_AGENT']) &&
+    !preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/uri\.lv/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) {
