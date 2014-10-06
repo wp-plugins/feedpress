@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: FeedPress
 Author URI: https://feedpress.it
-Version: 1.5.9
+Version: 1.6
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -804,7 +804,8 @@ if (isset($_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/uri\.lv/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT']) &&
-    !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) {
+    !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT']) &&
+    (!isset($_GET['redirect']) || $_GET['redirect'] != 'false')) {
 
     add_action('template_redirect', 'feedpress_redirect', 1);
 
