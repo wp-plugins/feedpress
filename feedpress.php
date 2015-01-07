@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: FeedPress
 Author URI: https://feedpress.it
-Version: 1.6
+Version: 1.6.1
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -769,7 +769,7 @@ function feedpress_redirect() {
                     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                     wp_redirect($options['feedpress_tag'][$tag], 307);
                     exit;
-                } else if ($options['feedpress_no_cats'] == 1) {
+                } else if (($cat || $tag) && $options['feedpress_no_cats'] == 1) {
                     // If this is a category/tag feed and redirect is disabled, do nothing
 				} else if ($search && $options['feedpress_no_search'] == 1) {
 					// If this is a search result feed and redirect is disabled, do nothing
