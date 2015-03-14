@@ -3,9 +3,9 @@
 Plugin Name: FeedPress
 Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
-Author: Maxime VALETTE
-Author URI: http://maximevalette.com
-Version: 1.5.5
+Author: FeedPress
+Author URI: https://feedpress.it
+Version: 1.6.2
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -171,7 +171,7 @@ function feedpress_conf() {
 
 		if (isset($_POST['feedpress_feed_url'])) {
 			$feedpress_feed_url = $_POST['feedpress_feed_url'];
-			$feedpress_id = feedpress_get_feed_name($feedpress_feed_url);
+			$feedpress_id = $options['feedpress_feeds'][$_POST['feedpress_feed_url']];
 		} else {
             $feedpress_feed_url = null;
             $feedpress_id = null;
@@ -179,7 +179,7 @@ function feedpress_conf() {
 
 		if (isset($_POST['feedpress_comment_url'])) {
 			$feedpress_comment_url = $_POST['feedpress_comment_url'];
-            $feedpress_comment_id = feedpress_get_feed_name($feedpress_comment_url);
+            $feedpress_comment_id = $options['feedpress_feeds'][$_POST['feedpress_comment_url']];
 		} else {
             $feedpress_comment_url = null;
             $feedpress_comment_id = null;
@@ -384,6 +384,8 @@ function feedpress_conf() {
         if (empty($options['feedpress_token'])) echo ' SELECTED';
         echo '>'.__('None', FEEDPRESS_TEXTDOMAIN).'</option>';
 
+	    $feedsData = array();
+
         if (is_array($json->feeds)) {
 
             foreach ($json->feeds as $feed) {
@@ -391,6 +393,8 @@ function feedpress_conf() {
                 echo '<option value="'.$feed->url.'"';
                 if ($options['feedpress_feed_id'] == $feed->name) echo ' SELECTED';
                 echo '>'.$feed->url.'</option>';
+
+	            $feedsData[$feed->url] = $feed->name;
 
             }
 
@@ -636,6 +640,9 @@ function feedpress_conf() {
 
         echo '</div>';
 
+	    $options['feedpress_feeds'] = $feedsData;
+	    update_option('feedpress', $options);
+
     }
 
 }
@@ -654,6 +661,8 @@ function feedpress_redirect() {
         header('Cache-Control: no-cache, must-revalidate');
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         wp_redirect($options['feedpress_url'][strtolower($_SERVER['REQUEST_URI'])], 307);
+		
+		exit;
 
     }
 
@@ -694,11 +703,11 @@ function feedpress_redirect() {
 
     $cat = null;
 
-	if ($wp->query_vars['category_name'] != null) {
+	if (isset($wp->query_vars['category_name']) && $wp->query_vars['category_name'] != null) {
 		$cat = $wp->query_vars['category_name'];
 	}
 
-	if ($wp->query_vars['cat'] != null) {
+	if (isset($wp->query_vars['cat']) && $wp->query_vars['cat'] != null) {
 		if ($wp_db_version >= 6124) {
 			// 6124 = WP 2.3
 			$cat = $wpdb->get_var("SELECT slug FROM $wpdb->terms WHERE term_id = '".$wp->query_vars['cat']."' LIMIT 1");
@@ -709,19 +718,19 @@ function feedpress_redirect() {
 	
 	// Get tag
 	$tag = null;
-	if ($wp->query_vars['tag'] != null) {
+	if (isset($wp->query_vars['tag']) && $wp->query_vars['tag'] != null) {
 		$tag = $wp->query_vars['tag'];
 	}
 
 	// Get search terms
 	$search = null;
-	if ($wp->query_vars['s'] != null) {
+	if (isset($wp->query_vars['s']) && $wp->query_vars['s'] != null) {
 		$search = $wp->query_vars['s'];
 	}
 
 	// Get author name
 	$author_name = null;
-	if ($wp->query_vars['author_name'] != null) {
+	if (isset($wp->query_vars['author_name']) && $wp->query_vars['author_name'] != null) {
 		$author_name = $wp->query_vars['author_name'];
 	}
 
@@ -760,7 +769,7 @@ function feedpress_redirect() {
                     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
                     wp_redirect($options['feedpress_tag'][$tag], 307);
                     exit;
-                } else if ($options['feedpress_no_cats'] == 1) {
+                } else if (($cat || $tag) && $options['feedpress_no_cats'] == 1) {
                     // If this is a category/tag feed and redirect is disabled, do nothing
 				} else if ($search && $options['feedpress_no_search'] == 1) {
 					// If this is a search result feed and redirect is disabled, do nothing
@@ -791,10 +800,12 @@ function feedpress_redirect() {
 
 // Handle feed redirections
 
-if (!preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
+if (isset($_SERVER['HTTP_USER_AGENT']) &&
+    !preg_match('/feedpress/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/uri\.lv/i', $_SERVER['HTTP_USER_AGENT']) &&
     !preg_match('/feedvalidator/i', $_SERVER['HTTP_USER_AGENT']) &&
-    !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT'])) {
+    !preg_match('/googlebot/i', $_SERVER['HTTP_USER_AGENT']) &&
+    (!isset($_GET['redirect']) || $_GET['redirect'] != 'false')) {
 
     add_action('template_redirect', 'feedpress_redirect', 1);
 
@@ -815,14 +826,6 @@ function feedpress_publish_post() {
 
 // Action when a post is published
 add_action('publish_post', 'feedpress_publish_post');
-
-function feedpress_get_feed_name($url) {
-
-    $infos = parse_url($url);
-
-    return substr($infos['path'], 1);
-
-}
 
 function feedpress_admin_notice() {
 
@@ -849,6 +852,17 @@ function feedpress_admin_notice() {
 
 // Admin notice
 add_action('admin_notices', 'feedpress_admin_notice');
+
+function feedpress_register_plugin_links($links, $file) {
+	$base = plugin_basename(__FILE__);
+	if ($file == $base) {
+		$links[] = '<a href="' . admin_url('options-general.php?page=feedpress/feedpress.php') . '">' . __('Update settings', FEEDPRESS_TEXTDOMAIN) . '</a>';
+	}
+	return $links;
+}
+
+//Additional links on the plugin page
+add_filter('plugin_row_meta', 'feedpress_register_plugin_links', 10, 2);
 
 function feedpress_get_options() {
 
