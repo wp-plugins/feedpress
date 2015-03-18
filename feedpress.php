@@ -860,7 +860,7 @@ function feedpress_register_plugin_links($links, $file=null) {
 	if (null === $file) {
 		array_unshift($links, $settingsLink);
 	} elseif ($file == $base) {
-		$links = array_merge($links, [$settingsLink]);
+		$links = array_merge($links, array($settingsLink));
 	}
 
 	return $links;
