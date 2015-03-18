@@ -5,7 +5,7 @@ Plugin URI: http://feedpress.it
 Description: Redirects all feeds to a FeedPress feed and enables realtime feed updates.
 Author: FeedPress
 Author URI: https://feedpress.it
-Version: 1.6.2
+Version: 1.6.3
 */
 
 define('FEEDPRESS_TEXTDOMAIN', 'feedpress');
@@ -853,16 +853,25 @@ function feedpress_admin_notice() {
 // Admin notice
 add_action('admin_notices', 'feedpress_admin_notice');
 
-function feedpress_register_plugin_links($links, $file) {
+function feedpress_register_plugin_links($links, $file=null) {
 	$base = plugin_basename(__FILE__);
-	if ($file == $base) {
-		$links[] = '<a href="' . admin_url('options-general.php?page=feedpress/feedpress.php') . '">' . __('Update settings', FEEDPRESS_TEXTDOMAIN) . '</a>';
+	$settingsLink = '<a href="' . admin_url('options-general.php?page=feedpress/feedpress.php') . '">' . __('Settings') . '</a>';
+
+	if (null === $file) {
+		array_unshift($links, $settingsLink);
+	} elseif ($file == $base) {
+		$links = array_merge($links, [$settingsLink]);
 	}
+
 	return $links;
 }
 
-//Additional links on the plugin page
-add_filter('plugin_row_meta', 'feedpress_register_plugin_links', 10, 2);
+if (function_exists('plugin_row_meta')) {
+	add_filter('plugin_row_meta', 'feedpress_register_plugin_links', 10, 2);
+} elseif (function_exists('post_class')) {
+	$plugin = plugin_basename(WP_PLUGIN_DIR . '/feedpress/feedpress.php');
+	add_filter('plugin_action_links_' . $plugin, 'feedpress_register_plugin_links');
+}
 
 function feedpress_get_options() {
 
